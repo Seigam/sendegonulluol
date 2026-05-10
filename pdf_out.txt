@@ -1,0 +1,251 @@
+--- SAYFA 1 ---
+ 
+T.C. 
+RECEP TAYYİP ERDOĞAN ÜNİVERSİTESİ 
+ARDEŞEN MESLEK YÜKSEKOKULU   
+BİLGİSAYAR TEKNOLOJİLERİ BÖLÜMÜ 
+SİSTEM ANALİZİ DERSİ PROJE İŞ PLANI FORMU 
+ 
+ 
+PROJE NUMARASI 
+ 
+2 
+0 
+2 
+6 
+2 
+1 
+0 
+9 
+ 
+PROJE ADI 
+ 
+Sen De Gönüllü Ol 
+ 
+ 
+PROJE DANIŞMANI 
+Dr. Öğr. Üyesi Murat HACIMURTAZAOĞLU 
+ 
+1.​ PROJE TANIMI 
+ 
+Projemiz, sosyal sorumluluk projelerinde yer almak isteyen kişilerle gönüllü arayan toplulukları bir araya getirmektedir. 
+Temel amacımız, dağınık halde bulunan etkinlikleri tek bir platformda toplayıp süreci kolaylaştırmaktır. Aynı zamanda  
+'oyunlaştırma' mantığını kullanarak insanları gönüllülüğe motive etmeyi amaçlıyoruz. 
+ 
+2.​ PROJE İÇERİĞİ, AMAÇ 
+ 
+2.1.​Proje/İş fikrinin yapılma amacı 
+Sosyal sorumluluk ve yardımlaşma etkinliklerini tek bir uygulama/site içerisinde toplayarak hem 
+gönüllü olmak isteyenler için etkinliklerden haberdar olmalarını kolaylaştırıp hemde etkinlikleri 
+düzenleyen topluluklar için gönüllü arama işlemini kolaylaştırmayı amaçlıyoruz.Amacımız, sosyal 
+sorumluluk projelerini tek bir çatı altında toplayarak çift yönlü bir kolaylık sağlamaktır: 
+ 
+Gönüllüler için: İlgi alanlarına uygun etkinlikleri tek bir ekrandan takip edip kolayca başvurabilme. 
+ 
+Topluluklar için: Düzenledikleri etkinliklere hızla gönüllü bulabilme ve başvuru süreçlerini dijital 
+olarak yönetebilme. 
+ 
+2.2.​Proje sonunda hedeflenen başarı ölçütleri 
+Projemizin başarılı sayılması için aşağıdaki hedeflere ulaşmayı planlıyoruz: 
+●​ Web ve mobil uygulamalarımızın ortak bir API ve veritabanı üzerinden senkronize olarak, hatasız çalışması. 
+●​ Oluşturulan etkinliklerin, sistem yöneticisi (Admin) onayından geçtikten sonra güvenli bir şekilde anasayfada 
+yayınlanması. 
+●​ Organizasyon sahiplerinin, kendi etkinliklerine başvuran gönüllülerin bilgilerini sistemden tek tıkla CSV (Excel) 
+dosyası olarak dışa aktarabilmesi. 
+●​ Sistemin, kullanıcıların katılım geçmişini takip ederek belirli eşiklerde (örneğin 5. etkinlik) ilgili rütbe ve 
+rozetleri profillerine otomatik olarak tanımlayabilmesi. 
+ 
+ 
+ 
+ 
+ 
+
+--- SAYFA 2 ---
+2.3.​Proje/İş gerçekleştirilirken kullanılan araç-gereçler ve amaçları 
+Node.js & Express.js: Sunucu (backend) altyapımızı ve her iki platformu da besleyecek RESTful API servislerini 
+oluşturmak için kullanılacak. 
+MongoDB / PostgreSQL: Projedeki kullanıcılar, etkinlikler ve başvurular arasındaki verileri güvenli ve tutarlı bir 
+biçimde saklamak için veritabanı olarak kullanılacak. 
+React.js (Next.js): Platformun web arayüzünü (frontend) ve Admin onay panelini geliştirmek için tercih ettik. 
+React Native (Expo): Uygulamanın Android ve iOS cihazlarda çalışacak mobil sürümünü geliştirmek için kullanılacak. 
+Figma: Yazılım aşamasına geçmeden önce kullanıcı arayüzü (UI) ve kullanıcı deneyimi (UX) tasarımlarını oluşturmak 
+amacıyla kullanılacak. 
+ 
+3.​ PROJE/İŞ PLANI 
+3.1.​Proje İş Zaman Grafiği 
+ 
+İş Paketleri 
+Faaliyetler 
+1 
+2 
+3 
+4 
+5 
+6 
+7 
+8 
+Kurulum, Tasarım ve Kimlik 
+Doğrulama 
+Veritabanı tablolarının planlanması ve temel 
+projelerin (Node.js, React) oluşturulması 
+x 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Kullanıcı kayıt/giriş (JWT ile Auth) API'lerinin 
+yazılması 
+x 
+x 
+ 
+ 
+ 
+ 
+ 
+ 
+ Web ve mobil yetkilendirme ekranlarının 
+tasarlanması 
+ 
+x 
+ 
+ 
+ 
+ 
+ 
+ 
+Etkinlik Yönetimi ve UI Geliştirme 
+Etkinlik oluşturma, listeleme ve silme 
+API'lerinin kodlanması 
+ 
+ 
+x 
+ 
+ 
+ 
+ 
+ 
+Admin onay/ret mantığının backend tarafında 
+kurulması 
+ 
+ 
+x 
+x 
+ 
+ 
+ 
+ 
+Anasayfa akışının ve etkinlik detay ekranlarının 
+geliştirilmesi 
+ 
+ 
+x 
+x 
+ 
+ 
+ 
+ 
+Başvuru İşlemleri, CSV ve 
+Oyunlaştırma 
+Kullanıcıların etkinliklere başvuru yapabilmesi 
+için veritabanı işlemlerinin tamamlanması 
+ 
+ 
+ 
+ 
+x 
+ 
+ 
+ 
+Başvuran listesini CSV olarak dışa aktarma 
+özelliğinin eklenmesi 
+ 
+ 
+ 
+ 
+x 
+ 
+ 
+ 
+Kullanıcı profillerinin ve rütbe (oyunlaştırma) 
+mantığının sisteme entegre edilmesi 
+ 
+ 
+ 
+ 
+ 
+x 
+ 
+ 
+Optimizasyon, Test ve Canlıya 
+Alma 
+Arama/filtreleme optimizasyonu ve form hata 
+ayıklamalarının yapılması 
+ 
+ 
+ 
+ 
+ 
+ 
+x 
+ 
+Backend sunucusunun bulut sisteme 
+yüklenmesi 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+x 
+Web sitesinin yayına alınması ve mobil .apk 
+çıktısının alınarak projenin tamamlanması 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+x 
+ 
+4.​  İŞ PAKETİ TANIMLAMA 
+4.1. Kurulum, Tasarım ve Kimlik Doğrulama 
+●​ 4.1.1. İş paketi kapsamında yapılacak faaliyetler: 
+○​ Veritabanı tablolarının planlanması ve temel projelerin (Node.js, React) oluşturulması. 
+○​ Kullanıcıların kayıt olma ve sisteme giriş yapma (JWT ile Auth) API'lerinin yazılması. 
+○​ Web ve mobilde yetkilendirme (Auth) ekranlarının tasarımlarının yapılması. 
+●​ 4.1.2. İş paketi sonucu başarı ölçütleri, hedefler: Uygulamanın temel iskeletinin ayağa kaldırılması ve 
+kullanıcıların web/mobil üzerinden güvenli bir şekilde hesaplarına giriş yapabilmesi. 
+ 
+ 
+4.2. Etkinlik Yönetimi ve UI Geliştirme 
+
+--- SAYFA 3 ---
+●​ 4.2.1. İş paketi kapsamında yapılacak faaliyetler: 
+○​ Etkinlik oluşturma, listeleme ve silme işlemleri için gerekli API'lerin kodlanması. 
+○​ Adminlerin bekleyen etkinlikleri onaylayıp reddetme mantığının kurulması. 
+○​ Web ve mobilde anasayfa akışının ve etkinlik detay ekranlarının geliştirilmesi. 
+●​ 4.2.2. İş paketi sonucu başarı ölçütleri, hedefler: Kullanıcıların etkinlik taslağı oluşturabilmesi ve bu 
+etkinliklerin ancak admin onayından geçtikten sonra herkese açık olarak listelenmesi. 
+4.3. Başvuru İşlemleri, CSV ve Oyunlaştırma 
+●​ 4.3.1. İş paketi kapsamında yapılacak faaliyetler: 
+○​ Kullanıcıların etkinliklere başvuru yapabilmesi için gerekli veritabanı işlemlerinin tamamlanması. 
+○​ Başvuran listesini CSV (Excel) formatında dışa aktarmayı sağlayan özelliğin API'ye eklenmesi. 
+○​ Kullanıcı profillerinin ve etkinlik sayısına göre rütbe atlama (oyunlaştırma) mantığının entegre 
+edilmesi. 
+●​ 4.3.2. İş paketi sonucu başarı ölçütleri, hedefler: Organizatörlerin başvuru listelerini sorunsuz indirebilmesi ve 
+kullanıcıların profillerinde kazandıkları rozetleri görüntüleyebilmesi. 
+4.4. Optimizasyon, Test ve Canlıya Alma 
+●​ 4.4.1. İş paketi kapsamında yapılacak faaliyetler: 
+○​ Arama çubuğu filtreleme işlemlerinin hızlandırılması ve form doğrulama uyarılarının/hatalarının 
+giderilmesi. 
+○​ Backend sunucusunun bulut platforma yüklenmesi. 
+○​ Web projesinin yayına alınması ve mobil uygulamanın .apk test çıktısının alınması. 
+●​ 4.4.2. İş paketi sonucu başarı ölçütleri, hedefler: Sistemin hatalardan arındırılarak tam fonksiyonel hale 
+getirilmesi ve projenin jüri/danışman sunumuna hazır, çalışan bir ürün olarak (MVP) canlıya alınması. 
+ 
+
