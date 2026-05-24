@@ -142,7 +142,7 @@ UserSchema.methods.generateToken = function () {
       email: this.email,
     },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRE }
+    { expiresIn: process.env.JWT_EXPIRE || '30d' }
   );
 };
 
