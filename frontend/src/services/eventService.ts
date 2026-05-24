@@ -1,4 +1,4 @@
-import { api } from './api';
+import { api, BASE_URL } from './api';
 
 export interface Event {
   _id: string;
@@ -118,7 +118,7 @@ export async function uploadImage(file: File): Promise<string> {
   }
   // Content-Type header'ını EKLEMİYORUZ — tarayıcı FormData boundary'sini otomatik ayarlar
 
-  const response = await fetch('/api/upload', {
+  const response = await fetch(`${BASE_URL}/upload`, {
     method: 'POST',
     headers,
     body: formData,
