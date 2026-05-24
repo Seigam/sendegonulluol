@@ -150,6 +150,12 @@ export function Home() {
                       <span>{event.appliedCount} / {event.quota} kişi</span>
                     </div>
                   </div>
+                  
+                  <div className="mt-6">
+                    <button className="w-full py-2.5 bg-teal-50 text-teal-700 font-semibold rounded-lg hover:bg-teal-100 transition-colors flex items-center justify-center gap-2">
+                      İncele ve Başvur
+                    </button>
+                  </div>
                 </div>
               </Link>
             ))}
