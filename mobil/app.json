@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobil",
-    "slug": "mobil",
+    "name": "Sen de Gönüllü Ol",
+    "slug": "sendegonulluol",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
