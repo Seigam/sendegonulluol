@@ -1,3 +1,4 @@
+import { getImageUrl } from '../services/api';
 ﻿import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, HeartHandshake } from 'lucide-react';
@@ -78,7 +79,7 @@ export function EventDetail() {
         {/* Cover Image */}
         <div className="h-64 sm:h-80 md:h-96 w-full relative">
           {event.coverImage ? (
-            <img src={event.coverImage} alt={event.title} className="w-full h-full object-cover" />
+            <img src={getImageUrl(event.coverImage)} alt={event.title} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-teal-700 flex items-center justify-center">
               <HeartHandshake size={64} className="text-white/40" />

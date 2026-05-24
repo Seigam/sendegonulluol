@@ -1,3 +1,4 @@
+import { getImageUrl } from '../services/api';
 import React, { useEffect, useState } from 'react';
 import { Award, Star, Calendar, ArrowRight, Zap, Target, RefreshCw } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
@@ -178,7 +179,7 @@ export function Profile() {
                   <li key={app._id} className="p-6 hover:bg-gray-50 transition-colors">
                     <div className="flex items-center gap-4">
                       {app.event?.coverImage && (
-                        <img src={app.event.coverImage} alt={app.event.title} className="w-16 h-16 rounded-xl object-cover" />
+                        <img src={getImageUrl(app.event.coverImage)} alt={app.event.title} className="w-16 h-16 rounded-xl object-cover" />
                       )}
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">

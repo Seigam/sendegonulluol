@@ -1,3 +1,4 @@
+import { getImageUrl } from '../services/api';
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, XCircle, Calendar, MapPin, ExternalLink, RefreshCw, List } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
@@ -121,7 +122,7 @@ export function AdminPanel() {
                     {event.coverImage && (
                       <div className="w-full md:w-48 h-32 flex-shrink-0">
                         <img
-                          src={event.coverImage}
+                          src={getImageUrl(event.coverImage)}
                           alt={event.title}
                           className="w-full h-full object-cover rounded-xl"
                         />

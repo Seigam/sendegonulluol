@@ -1,3 +1,4 @@
+import { getImageUrl } from '../services/api';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Search, Filter, Calendar, MapPin, Users } from 'lucide-react';
@@ -116,7 +117,7 @@ export function Home() {
                 <div className="relative h-48 w-full overflow-hidden">
                   {event.coverImage ? (
                     <img
-                      src={event.coverImage}
+                      src={getImageUrl(event.coverImage)}
                       alt={event.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
