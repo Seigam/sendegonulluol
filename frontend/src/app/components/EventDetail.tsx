@@ -97,11 +97,13 @@ export function EventDetail() {
         {/* Content */}
         <div className="p-6 md:p-10 flex flex-col md:flex-row gap-10">
 
-          {/* Ana İçerik */}
+          {/* Main Content */}
           <div className="flex-1 space-y-8">
             <section>
               <h2 className="text-xl font-bold text-gray-900 mb-4">Etkinlik Hakkında</h2>
-              <p className="text-gray-600 leading-relaxed whitespace-pre-line">{event.description}</p>
+              <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                {event.description}
+              </p>
             </section>
 
             <section>
@@ -118,51 +120,50 @@ export function EventDetail() {
             </section>
           </div>
 
-          {/* Başvuru Kartı */}
+          {/* Sidebar / Apply Card */}
           <div className="w-full md:w-80 flex-shrink-0">
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 sticky top-24 space-y-6">
+            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 sticky top-24">
+              <div className="space-y-6">
 
-              <div className="flex items-start gap-3">
-                <Calendar className="w-6 h-6 text-teal-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm text-gray-500">Tarih</p>
-                  <p className="font-medium text-gray-900">
-                    {new Date(event.date.start).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' })}
-                  </p>
-                  {event.date.end && event.date.end !== event.date.start && (
-                    <p className="text-sm text-gray-400">
-                      → {new Date(event.date.end).toLocaleDateString('tr-TR')}
+                <div className="flex items-start gap-3">
+                  <Calendar className="w-6 h-6 text-teal-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Tarih</p>
+                    <p className="font-medium text-gray-900">
+                      {new Date(event.date.start).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' })}
                     </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <MapPin className="w-6 h-6 text-teal-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm text-gray-500">Konum</p>
-                  <p className="font-medium text-gray-900">{event.location.city}</p>
-                  <p className="text-sm text-gray-400">{event.location.address}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <Users className="w-6 h-6 text-teal-600 shrink-0 mt-0.5" />
-                <div className="w-full">
-                  <p className="text-sm text-gray-500">Gönüllü Durumu</p>
-                  <div className="flex justify-between items-end mt-1 mb-2">
-                    <p className="font-medium text-gray-900">{event.appliedCount} / {event.quota} kişi</p>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-teal-500 h-2 rounded-full transition-all"
-                      style={{ width: `${progressPercentage}%` }}
-                    />
                   </div>
                 </div>
+
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-6 h-6 text-teal-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Konum</p>
+                    <p className="font-medium text-gray-900">{event.location.city} - {event.location.address}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Users className="w-6 h-6 text-teal-600 shrink-0 mt-0.5" />
+                  <div className="w-full">
+                    <p className="text-sm text-gray-500">Gönüllü Durumu</p>
+                    <div className="flex justify-between items-end mt-1 mb-2">
+                      <p className="font-medium text-gray-900">
+                        {event.appliedCount} / {event.quota} kişi
+                      </p>
+                    </div>
+                    {/* Progress bar */}
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-teal-500 h-2 rounded-full"
+                        style={{ width: `${progressPercentage}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-2">
+              <div className="mt-8">
                 {hasApplied ? (
                   <div className="bg-green-50 text-green-700 border border-green-200 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-2">
                     <CheckCircle className="w-8 h-8 text-green-500" />
@@ -191,6 +192,7 @@ export function EventDetail() {
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>

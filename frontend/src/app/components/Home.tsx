@@ -108,57 +108,56 @@ export function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event) => (
-              <Link
-                key={event._id}
-                to={`/event/${event._id}`}
-                className="group flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <div className="relative h-48 w-full overflow-hidden">
-                  {event.coverImage ? (
-                    <img
-                      src={getImageUrl(event.coverImage)}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-teal-100 flex items-center justify-center">
-                      <span className="text-5xl">🤝</span>
-                    </div>
-                  )}
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-teal-700">
-                    {event.category}
-                  </div>
-                </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-teal-600 transition-colors">
-                    {event.title}
-                  </h3>
-                  <p className="text-gray-500 text-sm mb-4 line-clamp-2">{event.description}</p>
+            {events.map((event) => {
+              const organizerName = event.organizer?.organizationName ||
+                `${event.organizer?.name || ''} ${event.organizer?.surname || ''}`.trim();
 
-                  <div className="mt-auto space-y-2 text-sm text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={16} className="text-teal-500" />
-                      <span>{new Date(event.date.start).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin size={16} className="text-teal-500" />
-                      <span className="truncate">{event.location.city} — {event.location.address}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Users size={16} className="text-teal-500" />
-                      <span>{event.appliedCount} / {event.quota} kişi</span>
+              return (
+                <Link
+                  key={event._id}
+                  to={`/event/${event._id}`}
+                  className="group flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  <div className="relative h-48 w-full overflow-hidden">
+                    {event.coverImage ? (
+                      <img
+                        src={getImageUrl(event.coverImage)}
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-teal-100 flex items-center justify-center">
+                        <span className="text-5xl">🤝</span>
+                      </div>
+                    )}
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-teal-700">
+                      {event.category}
                     </div>
                   </div>
-                  
-                  <div className="mt-6">
-                    <button className="w-full py-2.5 bg-teal-50 text-teal-700 font-semibold rounded-lg hover:bg-teal-100 transition-colors flex items-center justify-center gap-2">
-                      İncele ve Başvur
-                    </button>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-teal-600 transition-colors">
+                      {event.title}
+                    </h3>
+                    <p className="text-gray-500 text-sm mb-4 line-clamp-2">{event.description}</p>
+  
+                    <div className="mt-auto space-y-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={16} className="text-teal-500" />
+                        <span>{new Date(event.date.start).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin size={16} className="text-teal-500" />
+                        <span className="truncate">{event.location.city} — {event.location.address}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users size={16} className="text-teal-500" />
+                        <span>{organizerName}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
