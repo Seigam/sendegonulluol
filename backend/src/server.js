@@ -22,7 +22,9 @@ const app = express();
 // ---------- GÜVENLİK MIDDLEWARE'LERİ ----------
 
 // Helmet - HTTP güvenlik başlıkları
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false, // Dışarıdan (Vercel'den) resimlerin yüklenmesine izin ver
+}));
 
 // CORS - Cross-Origin Resource Sharing
 app.use(
