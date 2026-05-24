@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { AuthLayout } from './AuthLayout';
@@ -108,13 +108,6 @@ export function Login() {
           </button>
         </div>
 
-        {/* Hızlı test bilgisi */}
-        <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 text-xs text-teal-700 space-y-1">
-          <p className="font-semibold">🧪 Test Hesapları:</p>
-          <p>Admin: <span className="font-mono">admin@sendegonulluol.com</span> / <span className="font-mono">Admin123!</span></p>
-          <p>Gönüllü: <span className="font-mono">ali@example.com</span> / <span className="font-mono">Gonullu123</span></p>
-          <p>Org: <span className="font-mono">ayse@example.com</span> / <span className="font-mono">Organizer123</span></p>
-        </div>
       </form>
 
       {/* Sign Up Link */}

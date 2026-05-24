@@ -180,19 +180,11 @@ const createEventValidation = [
   body('date.start')
     .notEmpty()
     .withMessage('Başlangıç tarihi zorunludur.')
-    .isISO8601()
-    .withMessage('Geçerli bir tarih giriniz.'),
+    .trim(),
 
   body('date.end')
-    .optional()
-    .isISO8601()
-    .withMessage('Geçerli bir bitiş tarihi giriniz.')
-    .custom((value, { req }) => {
-      if (value && new Date(value) <= new Date(req.body.date.start)) {
-        throw new Error('Bitiş tarihi başlangıç tarihinden sonra olmalıdır.');
-      }
-      return true;
-    }),
+    .optional({ values: 'falsy' })
+    .trim(),
 
   body('quota')
     .notEmpty()

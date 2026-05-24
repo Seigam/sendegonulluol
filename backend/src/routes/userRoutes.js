@@ -7,6 +7,7 @@ const {
   getUserById,
   getAllUsers,
   toggleUserStatus,
+  getUserStats,
 } = require('../controllers/userController');
 const { auth, authorize } = require('../middlewares/auth');
 const { ROLES } = require('../config/constants');
@@ -30,6 +31,9 @@ const {
 router.get('/profile', auth, getProfile);
 router.put('/profile', auth, updateProfileValidation, updateProfile);
 router.put('/change-password', auth, changePasswordValidation, changePassword);
+
+// Public - Stats
+router.get('/stats', getUserStats);
 
 // Public - Belirli kullanıcı profili
 router.get('/:id', getUserById);

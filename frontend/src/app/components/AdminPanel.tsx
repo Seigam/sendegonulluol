@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, Calendar, MapPin, ExternalLink, RefreshCw } from 'lucide-react';
+import { CheckCircle, XCircle, Calendar, MapPin, ExternalLink, RefreshCw, List } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { Link } from 'react-router';
+import { completeEvent } from '../../services/eventService';
 import { toast } from 'sonner';
 
 export function AdminPanel() {
@@ -10,11 +11,16 @@ export function AdminPanel() {
   const [rejectModal, setRejectModal] = useState<{ eventId: string; title: string } | null>(null);
   const [adminMessage, setAdminMessage] = useState('');
 
+  const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
+
   useEffect(() => {
     fetchManagedEvents();
   }, []);
 
   const pendingEvents = managedEvents.filter((e) => e.status === 'pending');
+  const approvedEvents = managedEvents.filter((e) => e.status === 'approved');
+
+  const displayedEvents = activeTab === 'pending' ? pendingEvents : approvedEvents;
 
   const handleApprove = async (id: string) => {
     try {
@@ -43,6 +49,17 @@ export function AdminPanel() {
     setLoading(false);
   };
 
+  const handleCompleteEvent = async (id: string, title: string) => {
+    if (!window.confirm(`"${title}" etkinliğini sonuçlandırmak istediğinize emin misiniz? Katılan gönüllülerin ödülleri dağıtılacaktır.`)) return;
+    try {
+      await completeEvent(id);
+      toast.success('Etkinlik sonuçlandırıldı ve gönüllülere ödülleri dağıtıldı!');
+      fetchManagedEvents();
+    } catch (err: any) {
+      toast.error(err.message || 'Etkinlik sonuçlandırılamadı.');
+    }
+  };
+
   if (currentUser?.role !== 'admin') {
     return (
       <div className="text-center py-20">
@@ -64,26 +81,41 @@ export function AdminPanel() {
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="font-bold text-gray-700">Bekleyen Etkinlikler</h2>
-          <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full">
-            {pendingEvents.length} Adet
-          </span>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+        <div className="flex border-b border-gray-100">
+          {(['pending', 'approved'] as const).map((tab) => (
+            <button
+              key={tab}
+              className={`flex-1 py-4 flex justify-center items-center gap-2 font-medium transition-colors ${activeTab === tab ? 'text-teal-600 border-b-2 border-teal-600 bg-teal-50/50' : 'text-gray-500 hover:bg-gray-50'}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === 'pending' ? (
+                <>
+                  <List size={20} /> Bekleyen Etkinlikler 
+                  <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-0.5 rounded-full ml-1">{pendingEvents.length}</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle size={20} /> Onaylanmış Etkinlikler
+                  <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded-full ml-1">{approvedEvents.length}</span>
+                </>
+              )}
+            </button>
+          ))}
         </div>
 
         <div className="p-0">
-          {pendingEvents.length === 0 ? (
+          {displayedEvents.length === 0 ? (
             <div className="text-center py-16">
-              <div className="mx-auto w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
-                <CheckCircle className="w-8 h-8 text-green-500" />
+              <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 ${activeTab === 'pending' ? 'bg-green-50' : 'bg-gray-50'}`}>
+                {activeTab === 'pending' ? <CheckCircle className="w-8 h-8 text-green-500" /> : <List className="w-8 h-8 text-gray-400" />}
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Bekleyen etkinlik yok</h3>
-              <p className="text-gray-500">Tüm etkinlikler incelenmiş. Harika iş çıkardınız!</p>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">{activeTab === 'pending' ? 'Bekleyen etkinlik yok' : 'Onaylanmış etkinlik yok'}</h3>
+              <p className="text-gray-500">{activeTab === 'pending' ? 'Tüm etkinlikler incelenmiş. Harika iş çıkardınız!' : 'Şu anda sistemde yayınlanan bir etkinlik bulunmuyor.'}</p>
             </div>
           ) : (
             <ul className="divide-y divide-gray-100">
-              {pendingEvents.map((event) => (
+              {displayedEvents.map((event) => (
                 <li key={event._id} className="p-6 md:p-8 hover:bg-gray-50/50 transition-colors">
                   <div className="flex flex-col md:flex-row gap-6">
                     {event.coverImage && (
@@ -109,20 +141,32 @@ export function AdminPanel() {
                         </div>
 
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <button
-                            onClick={() => handleApprove(event._id)}
-                            className="bg-green-50 text-green-700 hover:bg-green-600 hover:text-white border border-green-200 hover:border-green-600 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-                          >
-                            <CheckCircle size={18} />
-                            Onayla
-                          </button>
-                          <button
-                            onClick={() => setRejectModal({ eventId: event._id, title: event.title })}
-                            className="bg-red-50 text-red-700 hover:bg-red-600 hover:text-white border border-red-200 hover:border-red-600 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-                          >
-                            <XCircle size={18} />
-                            Reddet
-                          </button>
+                          {activeTab === 'pending' ? (
+                            <>
+                              <button
+                                onClick={() => handleApprove(event._id)}
+                                className="bg-green-50 text-green-700 hover:bg-green-600 hover:text-white border border-green-200 hover:border-green-600 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+                              >
+                                <CheckCircle size={18} />
+                                Onayla
+                              </button>
+                              <button
+                                onClick={() => setRejectModal({ eventId: event._id, title: event.title })}
+                                className="bg-red-50 text-red-700 hover:bg-red-600 hover:text-white border border-red-200 hover:border-red-600 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+                              >
+                                <XCircle size={18} />
+                                Reddet
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => handleCompleteEvent(event._id, event.title)}
+                              className="bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white border border-indigo-200 hover:border-indigo-600 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+                            >
+                              <CheckCircle size={18} />
+                              Sonuçlandır
+                            </button>
+                          )}
                         </div>
                       </div>
 

@@ -99,3 +99,36 @@ export async function updateEventStatus(
   });
   return res.data.event;
 }
+
+// Etkinliği sonuçlandır ve katılımcıları ödüllendir (admin/organizer)
+export async function completeEvent(id: string): Promise<Event> {
+  const res = await api.patch<SingleEventResponse>(`/events/${id}/complete`);
+  return res.data.event;
+}
+
+// Görsel yükle (FormData göndermek için native fetch kullanılır, api helper JSON-only çalışır)
+export async function uploadImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const token = localStorage.getItem('token');
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  // Content-Type header'ını EKLEMİYORUZ — tarayıcı FormData boundary'sini otomatik ayarlar
+
+  const response = await fetch('/api/upload', {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Görsel yüklenemedi.');
+  }
+
+  return data.url;
+}

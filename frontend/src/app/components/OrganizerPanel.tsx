@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Download, Plus, List, CheckCircle, RefreshCw, Trash2 } from 'lucide-react';
+import { Download, Plus, List, CheckCircle, RefreshCw, Trash2, Image as ImageIcon } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { getEventApplications, getCSVExportUrl } from '../../services/applicationService';
+import { completeEvent, uploadImage } from '../../services/eventService';
 import { toast } from 'sonner';
 import type { Application } from '../../services/applicationService';
 
@@ -12,6 +13,8 @@ export function OrganizerPanel() {
   const [activeTab, setActiveTab] = useState<'create' | 'manage'>('manage');
   const [loadingApps, setLoadingApps] = useState<string | null>(null);
   const [eventApps, setEventApps] = useState<Record<string, Application[]>>({});
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const { createEvent, managedEvents, fetchManagedEvents, deleteEvent, currentUser } = useAppContext();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -26,8 +29,29 @@ export function OrganizerPanel() {
     fetchManagedEvents();
   }, []);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const onSubmit = async (data: any) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
+      // Adım 1: Görsel varsa önce yükle
+      let imageUrl: string | undefined = undefined;
+      
+      if (coverFile) {
+        toast.info('Görsel yükleniyor...');
+        try {
+          imageUrl = await uploadImage(coverFile);
+          toast.success('Görsel başarıyla yüklendi!');
+        } catch (uploadErr: any) {
+          console.error('Görsel yükleme hatası:', uploadErr);
+          toast.error('Görsel yüklenemedi: ' + (uploadErr.message || 'Bilinmeyen hata'));
+          setIsSubmitting(false);
+          return; // Görsel yüklenemediyse etkinliği oluşturma
+        }
+      }
+
+      // Adım 2: Etkinliği oluştur (görsel URL'si ile birlikte)
       await createEvent({
         title: data.title,
         description: data.description,
@@ -35,12 +59,18 @@ export function OrganizerPanel() {
         location: { city: data.city, address: data.address },
         date: { start: data.dateStart, end: data.dateEnd || data.dateStart },
         quota: Number(data.quota),
+        coverImage: imageUrl,
       });
       toast.success('Etkinlik oluşturuldu! Yönetici onayından sonra yayınlanacak.');
       reset();
+      setCoverFile(null);
+      setCoverPreview(null);
       setActiveTab('manage');
     } catch (err: any) {
+      console.error('Etkinlik oluşturma hatası:', err);
       toast.error(err.message || 'Etkinlik oluşturulamadı.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -82,6 +112,17 @@ export function OrganizerPanel() {
       toast.success('Etkinlik silindi.');
     } catch (err: any) {
       toast.error(err.message || 'Silinemedi.');
+    }
+  };
+
+  const handleCompleteEvent = async (id: string, title: string) => {
+    if (!window.confirm(`"${title}" etkinliğini sonuçlandırmak istediğinize emin misiniz? Katılan gönüllülerin ödülleri dağıtılacaktır.`)) return;
+    try {
+      await completeEvent(id);
+      toast.success('Etkinlik sonuçlandırıldı ve gönüllülere ödülleri dağıtıldı!');
+      fetchManagedEvents();
+    } catch (err: any) {
+      toast.error(err.message || 'Etkinlik sonuçlandırılamadı.');
     }
   };
 
@@ -133,6 +174,43 @@ export function OrganizerPanel() {
                     placeholder="Hafta Sonu Sahil Temizliği"
                   />
                   {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message as string}</p>}
+                </div>
+
+                {/* Kapak Görseli */}
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700">Kapak Görseli</label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition-colors">
+                    {coverPreview ? (
+                      <div className="relative inline-block">
+                        <img src={coverPreview} alt="Preview" className="h-40 rounded-lg object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => { setCoverFile(null); setCoverPreview(null); }}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-4">
+                        <ImageIcon size={32} className="text-gray-400" />
+                        <span className="text-sm text-gray-600">Görsel seçmek için tıklayın</span>
+                        <span className="text-xs text-gray-400">JPG, PNG veya WEBP (Max 5MB)</span>
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept="image/png, image/jpeg, image/jpg, image/webp"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setCoverFile(file);
+                              setCoverPreview(URL.createObjectURL(file));
+                            }
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
                 </div>
 
                 {/* Açıklama */}
@@ -209,9 +287,12 @@ export function OrganizerPanel() {
                 </div>
 
                 <div className="pt-4 border-t border-gray-100">
-                  <button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-xl flex justify-center items-center gap-2 transition-colors">
-                    <CheckCircle size={20} />
-                    Etkinliği Onaya Gönder
+                  <button type="submit" disabled={isSubmitting} className={`w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-xl flex justify-center items-center gap-2 transition-colors ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                    {isSubmitting ? (
+                      <><RefreshCw size={20} className="animate-spin" /> Gönderiliyor...</>
+                    ) : (
+                      <><CheckCircle size={20} /> Etkinliği Onaya Gönder</>
+                    )}
                   </button>
                 </div>
               </form>
@@ -238,9 +319,12 @@ export function OrganizerPanel() {
                               <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ${
                                 event.status === 'approved' ? 'bg-green-100 text-green-700' :
                                 event.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                event.status === 'completed' ? 'bg-gray-200 text-gray-700' :
                                 'bg-red-100 text-red-700'
                               }`}>
-                                {event.status === 'approved' ? 'Yayında' : event.status === 'pending' ? 'Onay Bekliyor' : 'Reddedildi'}
+                                {event.status === 'approved' ? 'Yayında' : 
+                                 event.status === 'pending' ? 'Onay Bekliyor' : 
+                                 event.status === 'completed' ? 'Tamamlandı' : 'Reddedildi'}
                               </span>
                             </div>
                             <p className="text-gray-500 text-sm line-clamp-1 mb-2">{event.description}</p>
@@ -272,6 +356,15 @@ export function OrganizerPanel() {
                               <Download size={16} className="text-teal-600" />
                               CSV
                             </button>
+                            {event.status === 'approved' && (
+                              <button
+                                onClick={() => handleCompleteEvent(event._id, event.title)}
+                                className="border border-indigo-100 bg-white text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 font-medium py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm shadow-sm"
+                              >
+                                <CheckCircle size={16} />
+                                Sonuçlandır
+                              </button>
+                            )}
                             <button
                               onClick={() => handleDelete(event._id, event.title)}
                               className="border border-red-100 bg-white text-red-500 hover:text-red-700 hover:bg-red-50 font-medium py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm shadow-sm"

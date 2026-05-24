@@ -17,6 +17,12 @@ const connectDB = async () => {
         const { MongoMemoryServer } = require('mongodb-memory-server');
         mongoServer = await MongoMemoryServer.create();
         uri = mongoServer.getUri();
+        
+        // Bellek içi DB kullanılıyorsa, otomatik seed yap
+        await mongoose.connect(uri);
+        const { seedDatabase } = require('../seed');
+        await seedDatabase(true);
+        return;
       }
     }
 

@@ -8,6 +8,7 @@ const {
   getEventById,
   deleteEvent,
   updateEventStatus,
+  completeEvent,
 } = require('../controllers/eventController');
 
 const { auth, authorize } = require('../middlewares/auth');
@@ -48,13 +49,10 @@ router.post('/', auth, authorize(ROLES.ORGANIZER, ROLES.ADMIN), createEventValid
 
 router.delete('/:id', auth, authorize(ROLES.ORGANIZER, ROLES.ADMIN), deleteEvent);
 
-// --- Admin Endpoints ---
-router.patch(
-  '/:id/status',
-  auth,
-  authorize(ROLES.ADMIN),
-  updateEventStatusValidation,
-  updateEventStatus
-);
+// Sadece Admin (Onay/Red işlemleri)
+router.patch('/:id/status', auth, authorize(ROLES.ADMIN), updateEventStatusValidation, updateEventStatus);
+
+// Organizatör ve Admin (Etkinliği sonuçlandır)
+router.patch('/:id/complete', auth, authorize(ROLES.ORGANIZER, ROLES.ADMIN), completeEvent);
 
 module.exports = router;

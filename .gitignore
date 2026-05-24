@@ -138,3 +138,6 @@ ios/
 .vscode/
 *.swp
 *.swo
+
+# Test hesapları dosyası
+test_hesaplari.txt

@@ -1,6 +1,8 @@
 const { validationResult } = require('express-validator');
 const Event = require('../models/Event');
-const { ROLES, EVENT_STATUS } = require('../config/constants');
+const Application = require('../models/Application');
+const User = require('../models/User');
+const { ROLES, EVENT_STATUS, APPLICATION_STATUS, BADGES } = require('../config/constants');
 
 /**
  * @desc    Yeni etkinlik taslağı oluştur
@@ -288,6 +290,77 @@ const updateEventStatus = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Etkinliği Sonuçlandır ve Başvuruları Tamamla
+ * @route   PATCH /api/events/:id/complete
+ * @access  Private (Organizer, Admin)
+ */
+const completeEvent = async (req, res, next) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({ success: false, message: 'Etkinlik bulunamadı.' });
+    }
+
+    // Yetki Kontrolü
+    if (req.user.role !== ROLES.ADMIN && req.user.id !== event.organizer.toString()) {
+      return res.status(403).json({ success: false, message: 'Bu etkinliği sonuçlandırma yetkiniz yok.' });
+    }
+
+    if (event.status !== EVENT_STATUS.APPROVED) {
+      return res.status(400).json({ success: false, message: 'Sadece onaylanmış etkinlikler sonuçlandırılabilir.' });
+    }
+
+    // Etkinliği tamamlandı yap
+    event.status = EVENT_STATUS.COMPLETED;
+    await event.save();
+
+    // Bu etkinliğe ait geçerli başvuruları bul
+    const applications = await Application.find({
+      event: event._id,
+      status: { $in: [APPLICATION_STATUS.PENDING, APPLICATION_STATUS.ACCEPTED] }
+    });
+
+    let rewardedCount = 0;
+
+    for (const application of applications) {
+      // Başvuruyu onaylandı olarak güncelle
+      application.status = APPLICATION_STATUS.ACCEPTED;
+      await application.save();
+
+      // Kullanıcıyı güncelle
+      const user = await User.findById(application.user);
+      if (user) {
+        user.completedEventsCount += 1;
+
+        // Rozet kontrolü
+        const earned = BADGES.filter((b) => b.minEvents <= user.completedEventsCount);
+        if (earned.length > 0) {
+          const latestBadge = earned[earned.length - 1];
+          const alreadyHas = user.badges.some((b) => b.name === latestBadge.name);
+          if (!alreadyHas) {
+            user.badges.push({ name: latestBadge.name, icon: latestBadge.icon });
+            user.currentRank = latestBadge.name;
+          }
+        }
+        await user.save();
+        rewardedCount++;
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Etkinlik başarıyla sonuçlandırıldı ve ${rewardedCount} gönüllü ödüllendirildi!`,
+      data: {
+        event: event.toSafeObject(true),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createEvent,
   getEvents,
@@ -295,4 +368,5 @@ module.exports = {
   getEventById,
   deleteEvent,
   updateEventStatus,
+  completeEvent,
 };

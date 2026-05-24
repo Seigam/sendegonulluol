@@ -300,6 +300,28 @@ const toggleUserStatus = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get user statistics (e.g. number of active volunteers)
+ * @route   GET /api/users/stats
+ * @access  Public
+ */
+const getUserStats = async (req, res, next) => {
+  try {
+    const totalUsersCount = await User.countDocuments({
+      isActive: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalUsers: totalUsersCount,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProfile,
   updateProfile,
@@ -307,4 +329,5 @@ module.exports = {
   getUserById,
   getAllUsers,
   toggleUserStatus,
+  getUserStats,
 };

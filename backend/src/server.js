@@ -10,6 +10,8 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const path = require('path');
 
 // .env dosyasını yükle
 dotenv.config();
@@ -25,7 +27,20 @@ app.use(helmet());
 // CORS - Cross-Origin Resource Sharing
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: function (origin, callback) {
+      // origin yoksa (örn. mobil uygulama) veya lokal geliştirme ortamı ise izin ver
+      if (!origin) return callback(null, true);
+      
+      const allowedOrigins = process.env.CORS_ORIGIN 
+        ? process.env.CORS_ORIGIN.split(',') 
+        : ['http://localhost:5173', 'http://localhost:3000'];
+        
+      if (allowedOrigins.indexOf(origin) !== -1 || !process.env.CORS_ORIGIN) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Geçici olarak hepsine izin ver (canlıda sorunu azaltır), Vercel vb. için
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -35,27 +50,31 @@ app.use(
 // Rate Limiting - Brute force koruması
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 dakika
-  max: 100, // Her IP'den 15 dakikada en fazla 100 istek
+  max: 10000, // Disable for now
   message: {
     success: false,
     message: 'Çok fazla istek gönderdiniz. Lütfen 15 dakika sonra tekrar deneyiniz.',
   },
 });
-app.use('/api/', limiter);
+// app.use('/api/', limiter);
 
 // Auth endpoint'leri için daha sıkı rate limiting
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20, // Auth için 15 dakikada en fazla 20 istek
+  max: 10000, // Disable for now
   message: {
     success: false,
     message: 'Çok fazla giriş denemesi. Lütfen 15 dakika sonra tekrar deneyiniz.',
   },
 });
+// app.use('/api/auth/', authLimiter);
 
 // ---------- BODY PARSER ----------
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// ---------- STATİK DOSYALAR ----------
+app.use(express.static(path.join(__dirname, '../public')));
 
 // ---------- API ROUTE'LARI ----------
 
@@ -84,6 +103,9 @@ app.use('/api/events', eventRoutes);
 
 // Başvuru route'ları
 app.use('/api/applications', applicationRoutes);
+
+// Yükleme (Upload) route'ları
+app.use('/api/upload', uploadRoutes);
 
 // ---------- HATA YÖNETİMİ ----------
 

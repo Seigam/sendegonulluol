@@ -4,7 +4,9 @@
  * Token otomatik olarak header'a eklenir.
  */
 
-const BASE_URL = '/api';
+// Vercel gibi ortamlarda çevre değişkeninden (environment variable) URL okunur. 
+// Lokal ortamda proxy devreye gireceği için '/api' kullanılır.
+export const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // localStorage'daki token'ı al
 function getToken(): string | null {
@@ -58,7 +60,14 @@ async function request<T>(
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || 'Bir hata oluştu.');
+    // Backend doğrulama hatalarını detaylı göster
+    let errorMsg = data.message || 'Bir hata oluştu.';
+    if (data.errors && Array.isArray(data.errors)) {
+      const fieldErrors = data.errors.map((e: any) => `${e.field}: ${e.message}`).join(', ');
+      errorMsg += ' (' + fieldErrors + ')';
+    }
+    console.error('API Hatası:', errorMsg, data);
+    throw new Error(errorMsg);
   }
 
   return data;

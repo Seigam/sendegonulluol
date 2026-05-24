@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { HeartHandshake } from 'lucide-react';
+import { api } from '../../services/api';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -8,6 +9,19 @@ interface AuthLayoutProps {
 }
 
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
+  const [totalUsers, setTotalUsers] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response: any = await api.get('/users/stats');
+        setTotalUsers(response.data.totalUsers);
+      } catch (error) {
+        console.error('Kullanıcı istatistikleri alınamadı:', error);
+      }
+    };
+    fetchStats();
+  }, []);
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row font-sans">
       {/* 
@@ -74,7 +88,11 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
                 ))}
               </div>
               <p className="text-sm font-medium opacity-80">
-                10.000+ aktif gönüllü
+                {totalUsers !== null ? (
+                  `${totalUsers} kayıtlı kullanıcı`
+                ) : (
+                  'Yükleniyor...'
+                )}
               </p>
             </div>
           </div>
