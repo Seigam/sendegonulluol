@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getMe, logout as authLogout, getStoredUser } from '../../services/authService';
 import { getEvents, getManagedEvents, createEvent as apiCreateEvent, updateEventStatus as apiUpdateStatus, deleteEvent as apiDeleteEvent } from '../../services/eventService';
 import { applyForEvent as apiApply, getMyApplications } from '../../services/applicationService';
@@ -23,7 +23,7 @@ interface AppContextType {
   // Applications
   myApplications: Application[];
   fetchMyApplications: () => Promise<void>;
-  applyForEvent: (eventId: string, note?: string) => Promise<void>;
+  applyForEvent: (eventId: string) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -103,8 +103,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const applyForEvent = async (eventId: string, note?: string) => {
-    await apiApply(eventId, note);
+  const applyForEvent = async (eventId: string) => {
+    await apiApply(eventId);
     // Başvuru sayısını güncelle
     setEvents((prev) =>
       prev.map((e) =>

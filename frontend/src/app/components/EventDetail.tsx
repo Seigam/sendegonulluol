@@ -1,5 +1,5 @@
 import { getImageUrl } from '../../services/api';
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, HeartHandshake } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
@@ -14,7 +14,6 @@ export function EventDetail() {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [isApplying, setIsApplying] = useState(false);
-  const [note, setNote] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -53,7 +52,7 @@ export function EventDetail() {
   const handleApply = async () => {
     setIsApplying(true);
     try {
-      await applyForEvent(event._id, note);
+      await applyForEvent(event._id);
       await fetchMyApplications();
       toast.success('Başvurunuz başarıyla alındı! Organizatörden haber bekleniyor.');
     } catch (err: any) {
@@ -171,30 +170,20 @@ export function EventDetail() {
                     <p className="text-sm">Organizatörden haber bekleniyor.</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    <textarea
-                      placeholder="Organizatöre notunuz veya motivasyonunuz (isteğe bağlı)..."
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-teal-500 focus:border-teal-500 text-sm resize-none"
-                      rows={3}
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      disabled={isApplying || isFull}
-                    />
-                    <button
-                      onClick={handleApply}
-                      disabled={isApplying || isFull}
-                      className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isApplying ? (
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <>
-                          <HeartHandshake size={20} />
-                          Hemen Başvur
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleApply}
+                    disabled={isApplying || isFull}
+                    className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isApplying ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        <HeartHandshake size={20} />
+                        Hemen Başvur
+                      </>
+                    )}
+                  </button>
                 )}
                 {isFull && !hasApplied && (
                   <p className="text-red-500 text-sm text-center mt-2">Kontenjan dolmuştur.</p>
