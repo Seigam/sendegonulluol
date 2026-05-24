@@ -75,6 +75,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ---------- STATİK DOSYALAR ----------
 app.use(express.static(path.join(__dirname, '../public')));
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // ---------- API ROUTE'LARI ----------
 
@@ -106,6 +107,18 @@ app.use('/api/applications', applicationRoutes);
 
 // Yükleme (Upload) route'ları
 app.use('/api/upload', uploadRoutes);
+
+// DEBUG endpoint to check uploads directory
+app.get('/api/debug-uploads', (req, res) => {
+  const fs = require('fs');
+  const uploadPath = path.join(__dirname, '../public/uploads');
+  try {
+    const files = fs.readdirSync(uploadPath);
+    res.json({ success: true, path: uploadPath, files });
+  } catch (error) {
+    res.json({ success: false, path: uploadPath, error: error.message });
+  }
+});
 
 // ---------- HATA YÖNETİMİ ----------
 
