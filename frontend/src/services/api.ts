@@ -13,11 +13,12 @@ export function getImageUrl(path: string | undefined | null): string {
   if (!path) return '';
   if (path.startsWith('http')) return path; // Zaten tam URL ise dokunma
   
-  const serverUrl = BASE_URL.endsWith('/api') 
-    ? BASE_URL.slice(0, -4) 
-    : BASE_URL;
-    
-  return `${serverUrl === '' ? '' : serverUrl}${path}`;
+  // VITE_API_URL'in sonundaki gereksiz slash veya /api kısımlarını temizle
+  let serverUrl = BASE_URL;
+  if (serverUrl.endsWith('/')) serverUrl = serverUrl.slice(0, -1);
+  if (serverUrl.endsWith('/api')) serverUrl = serverUrl.slice(0, -4);
+  
+  return `${serverUrl}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
 // localStorage'daki token'ı al
