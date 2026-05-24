@@ -4,10 +4,9 @@ import { Platform } from 'react-native';
 
 // Expo Go fiziksel cihazlarda localhost'a erişemez. Bu yüzden bilgisayarın yerel ağ IP'si kullanılır.
 // Android Studio Emülatörü kullanıyorsanız ve 'Network Error' alırsanız, bu IP'yi '10.0.2.2' olarak değiştirin.
-// EAS Build (Canlıya alma) sırasında EXPO_PUBLIC_API_URL değişkeni okunur.
-// Yoksa lokal test ortamı (192.168.1.62) kullanılır.
-export const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.62:5000';
-// export const BASE_URL = 'http://10.0.2.2:5000'; // Sadece Android Emulator için alternatif
+// EAS Build sırasında .env bazen algılanmayabiliyor, bu yüzden garantilemek için doğrudan canlı URL'yi kodluyoruz.
+export const BASE_URL = 'https://sendegonulluol-production.up.railway.app';
+// export const BASE_URL = 'http://192.168.1.62:5000'; // Lokal test için bunu açabilirsiniz.
 
 const API_URL = `${BASE_URL}/api`;
 
@@ -43,7 +42,7 @@ api.interceptors.response.use(
       // Token expired vb. durumlar yönetilebilir (ör. logout)
       await SecureStore.deleteItemAsync('token');
     }
-    const message = error.response?.data?.message || 'Bir hata oluştu.';
+    const message = error.response?.data?.message || `Bağlantı kurulamadı (${error.config?.baseURL}). İnternet bağlantınızı kontrol edin.`;
     return Promise.reject(new Error(message));
   }
 );
