@@ -1,4 +1,4 @@
-import { getImageUrl } from '../services/api';
+import { getImageUrl } from '../../services/api';
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, XCircle, Calendar, MapPin, ExternalLink, RefreshCw, List } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';

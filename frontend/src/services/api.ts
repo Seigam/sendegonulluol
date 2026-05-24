@@ -8,6 +8,18 @@
 // Lokal ortamda proxy devreye gireceği için '/api' kullanılır.
 export const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
+// Görsel URL'lerini backend adresine göre çözümlemek için yardımcı fonksiyon
+export function getImageUrl(path: string | undefined | null): string {
+  if (!path) return '';
+  if (path.startsWith('http')) return path; // Zaten tam URL ise dokunma
+  
+  const serverUrl = BASE_URL.endsWith('/api') 
+    ? BASE_URL.slice(0, -4) 
+    : BASE_URL;
+    
+  return `${serverUrl === '' ? '' : serverUrl}${path}`;
+}
+
 // localStorage'daki token'ı al
 function getToken(): string | null {
   return localStorage.getItem('token');

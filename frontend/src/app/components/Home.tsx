@@ -1,4 +1,4 @@
-import { getImageUrl } from '../services/api';
+import { getImageUrl } from '../../services/api';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Search, Filter, Calendar, MapPin, Users } from 'lucide-react';

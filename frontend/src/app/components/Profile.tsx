@@ -1,4 +1,4 @@
-import { getImageUrl } from '../services/api';
+import { getImageUrl } from '../../services/api';
 import React, { useEffect, useState } from 'react';
 import { Award, Star, Calendar, ArrowRight, Zap, Target, RefreshCw } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
