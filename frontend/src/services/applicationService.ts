@@ -1,4 +1,4 @@
-import { api } from './api';
+import { api, BASE_URL } from './api';
 
 export interface Application {
   _id: string;
@@ -54,7 +54,7 @@ export async function getEventApplications(eventId: string): Promise<Application
 
 // CSV dışa aktarma URL'ini döndür (fetch yerine direkt link)
 export function getCSVExportUrl(eventId: string): string {
-  return `/api/applications/event/${eventId}/csv`;
+  return `${BASE_URL}/applications/event/${eventId}/csv`;
 }
 
 // Başvuruyu geri çek
